@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.1)
 
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR AND NOT MSVC_IDE)
-  message(FATAL_ERROR "In-source builds are not allowed.
-Please create a directory and run cmake from there, passing the path to this source directory as the last argument.
-This process created the file `CMakeCache.txt' and the directory `CMakeFiles'. Please delete them.")
-endif()
+# Cadcorp
+#if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR AND NOT MSVC_IDE)
+#  message(FATAL_ERROR "In-source builds are not allowed.
+#Please create a directory and run cmake from there, passing the path to this source directory as the last argument.
+#This process created the file `CMakeCache.txt' and the directory `CMakeFiles'. Please delete them.")
+#endif()
+# Cadcorp
 
 # detect if this is included as subproject and if so expose
 # some variables to its parent scope
@@ -23,6 +25,9 @@ option(ENABLE_CCACHE "Speed up incremental rebuilds via ccache" ON)
 option(BUILD_TOOLS "Build OSRM tools" OFF)
 option(BUILD_PACKAGE "Build OSRM package" OFF)
 option(ENABLE_ASSERTIONS "Use assertions in release mode" OFF)
+# Cadcorp
+option(ENABLE_LOGGING "Output log messages" ON)
+# Cadcorp
 option(ENABLE_COVERAGE "Build with coverage instrumentalisation" OFF)
 option(ENABLE_SANITIZER "Use memory sanitizer for Debug build" OFF)
 option(ENABLE_STXXL "Use STXXL library" OFF)
@@ -130,7 +135,10 @@ include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/third_party/sol2/)
 include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/third_party/variant/include)
 
-set(BOOST_COMPONENTS date_time chrono filesystem iostreams program_options regex system thread unit_test_framework)
+# Cadcorp
+#set(BOOST_COMPONENTS date_time chrono filesystem iostreams program_options regex system thread unit_test_framework)
+set(BOOST_COMPONENTS date_time chrono filesystem iostreams program_options regex system thread)
+# Cadcorp
 
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/util/version.hpp.in
@@ -357,6 +365,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(BOOST_COMPONENTS ${BOOST_COMPONENTS} zlib)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj") # avoid compiler error C1128 from scripting_environment_lua.cpp
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32_LEAN_AND_MEAN") # avoid compiler error C2011 from dual #include of winsock.h and winsock2.h
+  # Cadcorp
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D__TBB_NO_IMPLICIT_LINKAGE") # Let clients choose when to reference tbb[_debug].lib
+  # Cadcorp
   add_dependency_defines(-DBOOST_LIB_DIAGNOSTIC)
   add_dependency_defines(-D_CRT_SECURE_NO_WARNINGS)
   add_dependency_defines(-DNOMINMAX) # avoid min and max macros that can break compilation
@@ -565,11 +576,13 @@ else()
   endif()
 
   # note libosmium depends on expat and bzip2
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/third_party/libosmium/cmake")
-  if(NOT OSMIUM_INCLUDE_DIR)
-    set(OSMIUM_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/libosmium/include")
-  endif()
-  find_package(Osmium REQUIRED COMPONENTS io)
+  # Cadcorp
+  #list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/third_party/libosmium/cmake")
+  #if(NOT OSMIUM_INCLUDE_DIR)
+  #  set(OSMIUM_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/libosmium/include")
+  #endif()
+  #find_package(Osmium REQUIRED COMPONENTS io)
+  # Cadcorp
   include_directories(SYSTEM ${OSMIUM_INCLUDE_DIR})
 endif()
 
@@ -683,7 +696,9 @@ set(CONTRACTOR_LIBRARIES
 set(ENGINE_LIBRARIES
     ${BOOST_ENGINE_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
-    ${TBB_LIBRARIES}
+    # Cadcorp
+    #${TBB_LIBRARIES}
+    # Cadcorp
     ${MAYBE_RT_LIBRARY}
     ${MAYBE_COVERAGE_LIBRARIES}
     ${ZLIB_LIBRARY})
@@ -727,6 +742,13 @@ if (ENABLE_ASSERTIONS)
   message(STATUS "Enabling assertions")
   add_definitions(-DBOOST_ENABLE_ASSERT_HANDLER)
 endif()
+
+# Cadcorp
+if (NOT ENABLE_LOGGING)
+  message(STATUS "Disabling logging")
+  add_definitions(-DOSRM_LOGGING_DISABLED)
+endif()
+# Cadcorp
 
 # Add RPATH info to executables so that when they are run after being installed
 # (i.e., from /usr/local/bin/) the linker can find library dependencies. For
@@ -829,8 +851,10 @@ add_custom_target(uninstall
 
 
 # Modular build system: each directory registered here provides its own CMakeLists.txt
-add_subdirectory(unit_tests)
-add_subdirectory(src/benchmarks)
+# Cadcorp
+#add_subdirectory(unit_tests)
+#add_subdirectory(src/benchmarks)
+# Cadcorp
 
 if (ENABLE_GLIBC_WORKAROUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLIBC_WORKAROUND")
