@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.1)
 
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR AND NOT MSVC_IDE)
-  message(FATAL_ERROR "In-source builds are not allowed.
-Please create a directory and run cmake from there, passing the path to this source directory as the last argument.
-This process created the file `CMakeCache.txt' and the directory `CMakeFiles'. Please delete them.")
-endif()
+# Cadcorp
+# if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR AND NOT MSVC_IDE)
+#   message(FATAL_ERROR "In-source builds are not allowed.
+# Please create a directory and run cmake from there, passing the path to this source directory as the last argument.
+# This process created the file `CMakeCache.txt' and the directory `CMakeFiles'. Please delete them.")
+# endif()
+# Cadcorp
 
 # detect if this is included as subproject and if so expose
 # some variables to its parent scope
@@ -135,7 +137,10 @@ include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/third_party/sol2/)
 include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/third_party/variant/include)
 
-set(BOOST_COMPONENTS date_time chrono filesystem iostreams program_options regex system thread unit_test_framework)
+# Cadcorp
+#set(BOOST_COMPONENTS date_time chrono filesystem iostreams program_options regex system thread unit_test_framework)
+set(BOOST_COMPONENTS date_time chrono filesystem iostreams program_options regex system thread)
+# Cadcorp
 
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/util/version.hpp.in
@@ -556,11 +561,13 @@ else()
   endif()
 
   # note libosmium depends on expat and bzip2
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/third_party/libosmium/cmake")
-  if(NOT OSMIUM_INCLUDE_DIR)
-    set(OSMIUM_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/libosmium/include")
-  endif()
-  find_package(Osmium REQUIRED COMPONENTS io)
+  # Cadcorp
+  #list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/third_party/libosmium/cmake")
+  #if(NOT OSMIUM_INCLUDE_DIR)
+  #  set(OSMIUM_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/libosmium/include")
+  #endif()
+  #find_package(Osmium REQUIRED COMPONENTS io)
+  # Cadcorp
   include_directories(SYSTEM ${OSMIUM_INCLUDE_DIR})
 endif()
 
@@ -818,8 +825,10 @@ add_custom_target(uninstall
 
 
 # Modular build system: each directory registered here provides its own CMakeLists.txt
-add_subdirectory(unit_tests)
-add_subdirectory(src/benchmarks)
+# Cadcorp
+#add_subdirectory(unit_tests)
+#add_subdirectory(src/benchmarks)
+# Cadcorp
 
 if (ENABLE_GLIBC_WORKAROUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLIBC_WORKAROUND")
