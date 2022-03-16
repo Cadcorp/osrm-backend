@@ -839,8 +839,10 @@ add_custom_target(uninstall
 
 
 # Modular build system: each directory registered here provides its own CMakeLists.txt
-add_subdirectory(unit_tests)
-add_subdirectory(src/benchmarks)
+# <Cadcorp>
+#add_subdirectory(unit_tests)
+#add_subdirectory(src/benchmarks)
+# </Cadcorp>
 
 if (ENABLE_GLIBC_WORKAROUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLIBC_WORKAROUND")
